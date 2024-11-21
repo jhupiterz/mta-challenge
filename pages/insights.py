@@ -3,7 +3,6 @@ import plots
 import pandas as pd
 import re
 import os
-from dotenv import load_dotenv
 import openai
 from dash import html, callback, Input, Output, dcc
 import dash_bootstrap_components as dbc
@@ -38,8 +37,7 @@ melted_data_weekdays = melted_data[melted_data.Date.dt.dayofweek < 5]
 melted_data_weekends = melted_data[melted_data.Date.dt.dayofweek >= 5]
 
 # Load environment variables from the .env file
-load_dotenv()
-openai.api_key = os.getenv("OPENAI_API_KEY")
+openai.api_key = os.environ.get('OPENAI')
 
 openai_switch = html.Div(
     [
