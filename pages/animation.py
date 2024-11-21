@@ -10,7 +10,8 @@ app = dash.get_app()
 
 cache = Cache(app.server, config={
         'CACHE_TYPE': 'filesystem',
-        'CACHE_DIR': 'cache-directory'
+        'CACHE_DIR': 'cache-directory',
+        "CACHE_DEFAULT_TIMEOUT": 900
     })
 
 dash.register_page(__name__, path='/animation')
@@ -38,7 +39,7 @@ radioitems_frequence = html.Div(
                 {"label": "Monthly", "value": 1},
                 {"label": "Weekly", "value": 2},
             ],
-            value=2,
+            value=1,
             id="frequency",
             style = {"color": "black", "fontSize": "2vh", "margin-top": "1.5vh"}
         ),

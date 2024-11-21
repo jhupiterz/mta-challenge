@@ -3,11 +3,11 @@ import plots
 import pandas as pd
 from dash import html, dcc, callback, Input, Output
 import dash_bootstrap_components as dbc
-from datetime import date
 
 df = pd.read_csv("data/MTA_Daily_Ridership.csv")
 df.Date = pd.to_datetime(df.Date)
 df = df.set_index("Date")
+
 df_ridership = df.iloc[:, [0, 2, 4, 6, 8, 10, 12]]
 df_ridership.columns = [x.replace(": Total Estimated Ridership", "") for x in df_ridership.columns]
 df_ridership.columns = [x.replace(": Total Scheduled Trips", "") for x in df_ridership.columns]
@@ -54,22 +54,20 @@ second_card = dbc.Card(
     ), style={"width": "17vw", "background-color": "#e9f7e3", "border-radius": "0px"}
 )
 
-
-date_selection = dcc.DatePickerRange(
-    id = "date-picker",
-    start_date=date(2020, 3, 1),
-    end_date=date(2020, 10, 31),
-    display_format='M-D-Y-Q',
-    start_date_placeholder_text='M-D-Y-Q',
-    style = {"margin-left": "5vw"}
-)
+radio_items = dcc.RadioItems(['2020', '2021','2022', '2023', '2024'], '2020',
+                             id = "year-selection",
+                             inline=True, style = {"color": "white"}, labelStyle={"marginLeft": "10px"})
 
 layout = html.Div([
     html.Div([
-        dcc.Graph(id = "heatmap", figure = plots.create_calendar_heatmap(df),
-                style={"padding": "0", "margin":"0", "margin-left": "4vw", "margin-top": "4vh", "height": "45vh", "width": "50vw", "z-index": "0"}, responsive=True),
-        dcc.Graph(id = "bargraph", figure = plots.create_bar_graph(df_ridership_precovid, df_ridership_postcovid),
-                style = {"margin-left": "5.5vw", "margin-top": "2vh", "width": "45vw", "height": "38vh", "z-index": "100"})
+        html.Div([
+            html.H3("Year", style = {"color": "white"}),
+            radio_items,
+        ], style = {"display": "flex", "flex-direction": "row", "align-items": "center", "margin-left": "-4vw", "margin-top": "2vh"}),
+        dcc.Graph(id = "heatmap",
+                style={"padding": "0", "margin":"0", "margin-left": "4vw", "margin-top": "0vh", "height": "42vh", "width": "50vw", "z-index": "0"}, responsive=True),
+        dcc.Graph(id = "bargraph",
+                style = {"margin-left": "5.5vw", "margin-top": "2vh", "width": "45vw", "height": "35vh", "z-index": "100"})
     ], style = {"display": "flex", "flex-direction": "column", "align-items": "center"}),
     html.Div([
         html.Div([
@@ -81,7 +79,26 @@ layout = html.Div([
                   style = {"margin-top": "3vh", "height":"25vh", "width": "112%", "margin-left": "-2vw"}, responsive=True)
         ], style = {"align-items": "center", "width": "37vw"}), 
         html.Div([
-            dcc.Graph(id = "donut-left", figure = plots.create_donut_charts(df_ridership), style = {"margin-top": "3vh", "height":"30vh"}, responsive=True),
+            dcc.Graph(id = "donuts", style = {"margin-top": "3vh", "height":"30vh"}, responsive=True),
         ], style = {"margin-top": "3vh"})  
     ],style = {"display": "flex", "flex-direction": "column", "margin-right": "5vw", "margin-top": "5vh", "margin-left": "5vw"})
 ], style = {"display": "flex", "flex-direction": "row"})
+
+@callback(Output("heatmap", "figure"),
+          Input("year-selection", "value"))
+def generate_heatmap(year):
+    figure = plots.create_calendar_heatmap(df, year)
+    return figure
+
+@callback(Output("bargraph", "figure"),
+          Input("year-selection", "value"))
+def generate_heatmap(year):
+    figure = plots.create_bar_graph(df_ridership_precovid,
+                                    df_ridership_postcovid, year)
+    return figure
+
+@callback(Output("donuts", "figure"),
+          Input("year-selection", "value"))
+def generate_heatmap(year):
+    figure = plots.create_donut_charts(df_ridership, year)
+    return figure

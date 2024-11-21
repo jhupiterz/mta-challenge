@@ -15,16 +15,20 @@ df = pd.read_csv("data/MTA_Daily_Ridership.csv")
 df.Date = pd.to_datetime(df.Date)
 df = df.set_index("Date")
 
+df.columns = [x.replace(": Total Estimated Ridership", "") for x in df.columns]
+df.columns = [x.replace(": Total Scheduled Trips", "") for x in df.columns]
+df.columns = [x.replace(": Total Traffic", "") for x in df.columns]
+
 melted_data = df.reset_index().melt(
     id_vars='Date',
     value_vars=[
-        'Subways: Total Estimated Ridership',
-        'Buses: Total Estimated Ridership',
-        'LIRR: Total Estimated Ridership',
-        'Metro-North: Total Estimated Ridership',
-        'Access-A-Ride: Total Scheduled Trips',
-        'Bridges and Tunnels: Total Traffic',
-        'Staten Island Railway: Total Estimated Ridership'
+        'Subways',
+        'Buses',
+        'LIRR',
+        'Metro-North',
+        'Access-A-Ride',
+        'Bridges and Tunnels',
+        'Staten Island Railway'
     ],
     var_name='Service',
     value_name='Ridership'
@@ -37,27 +41,6 @@ melted_data_weekends = melted_data[melted_data.Date.dt.dayofweek >= 5]
 load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
-openai_input = html.Div([
-    html.H3("MTA Ridership Analysis Assistant", style = {"color": "white", "margin-bottom": "2vh"}),
-    html.Pre(id='response_output', style = {"color": "white", 'whiteSpace': 'pre-wrap', 'wordWrap': 'break-word'})
-], style = {"width": "35vw", "margin-right": "5vw"})
-
-filter_switches = html.Div(
-    [
-        dbc.Label("Filters", style= {"color": "white", "fontSize": "3vh"}),
-        dbc.Checklist(
-            options=[
-                {"label": "Business days only (recommended)", "value": 1},
-                {"label": "Weekends only", "value": 2},
-            ],
-            value=[1],
-            id="switches-input",
-            switch=True,
-            style= {"color": "white"}
-        ),
-    ], style= {"margin-right": "3vw"}
-)
-
 openai_switch = html.Div(
     [
         dbc.Checklist(
@@ -67,25 +50,53 @@ openai_switch = html.Div(
             value=[],
             id="openai-funny",
             switch=True,
-            style= {"color": "white"}
+            style= {"color": "black"}
         ),
     ], style= {"margin-right": "3vw"}
+)
+
+openai_input = html.Div([
+    html.Div([
+        html.H4("MTA Ridership Analysis Assistant", style = {"color": "black", "margin-bottom": "2vh"}),
+        openai_switch
+    ], style = {"background-color": "#e9f7e3", "width": "35vw", "height": "12vh", "padding-left": "1.5vw"}),
+    html.Div([
+        html.Pre(id='response_output', style = {"color": "white", 'whiteSpace': 'pre-wrap', 'wordWrap': 'break-word'})
+    ], style = {"height": "70vh", "align-items": "center"})  
+], style = {"width": "35vw", "margin-right": "5vw"})
+
+filter_switches = html.Div(
+    [
+        dbc.Label("Filters", style= {"color": "black", "fontSize": "3vh"}),
+        dbc.Checklist(
+            options=[
+                {"label": "Business days only (recommended)", "value": 1},
+                {"label": "Weekends only", "value": 2},
+            ],
+            value=[1],
+            id="switches-input",
+            switch=True,
+            style= {"color": "black"},
+            className= "switches-input"
+        ),
+    ], style= {"margin-right": "3vw", "margin-left": "2vw"}
 )
 
 options = []
 for service in melted_data_weekdays.Service.unique():
     options.append({"label": service, "value": service})
-dropdown_services = html.Div(
-    children=dbc.DropdownMenu(
+dropdown_services = html.Div([
+    dbc.Label("Services to plot", style= {"color": "white", "fontSize": "3vh", "color": "black"}),
+    dbc.DropdownMenu(
         children=[
             dbc.Checklist(
             options= options,
-            value=["Subways: Total Estimated Ridership", "Buses: Total Estimated Ridership"],
+            value=["Subways", "Buses"],
             id="checklist-input",
         )],
-        style= {"width": "25vw"},
+        style= {"width": "25vw", "color": "black"},
         label="Service(s) to plot",
-    ),
+    )]
 )
 
 layout = html.Div([
@@ -99,13 +110,12 @@ layout = html.Div([
             html.Div([
                 filter_switches,
                 dropdown_services,
-            ], style = {"display": "flex", "flex-direction": "row", "margin-left": "5vw", "align-items": "center"}),
+            ], style = {"display": "flex", "flex-direction": "row", "margin-left": "5vw", "align-items": "flex-start", "background-color": "#e9f7e3"}),
             dcc.Loading(id = "loading-icon-insights",
                         children = dcc.Graph(id = "time-series" ,responsive=True, style = {"height": "70vh", "width": "50vw",  "margin": "5vw", "margin-top": "2vh", "margin-right": "2vh"})),
         ], style = {"display": "flex", "flex-direction": "column"}),
 
         html.Div([
-            openai_switch,
             openai_input,
         ], style = {"display": "flex", "flex-direction": "column", "width": "20vw", "margin-left": "3vw"})
     ], style = {"display": "flex", "flex-direction": "row"}),

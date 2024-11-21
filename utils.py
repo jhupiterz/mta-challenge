@@ -22,7 +22,7 @@ def format_number(num):
     elif abs(num) >= 1_000:
         return f"{num / 1_000:.1f}k"  # Format in thousands
     else:
-        return str(num)
+        return str(round(num,2))
 
 def generate_net_change(figure, trace):
     name = figure['data'][trace]['legendgroup']

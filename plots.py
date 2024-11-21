@@ -28,15 +28,19 @@ def create_animation(df, variable):
     fig.layout.updatemenus[0].buttons[0].args[1]["frame"]["duration"] = 250
     fig.update_yaxes(title= yaxis_title)
     fig.update_xaxes(title = "", range = [df.index.min(), df.index.max()])
-    fig.update_layout(width = 1000, height = 900, legend = dict(orientation="h", yanchor="top", y=0.99, xanchor="right", x=0.99, font = dict(size = 16, color = "white")),
+    fig.update_layout(width = 1000, height = 900, legend = dict(orientation="h", yanchor="bottom", y=1, xanchor="right", x=0.99, font = dict(size = 16, color = "white")),
                       legend_title_text= legend_title,
                       font=dict(size=18), margin={"r":0,"t":0,"l":0,"b":0},
                       legend_title = dict(font = dict(size = 18, color = "white")))
     return fig
 
 def create_daily_timeseries(df):
+    # Number of unique traces (countries in this case)
+    num_traces = df['Service'].nunique()
+    colors = px.colors.sample_colorscale('GnBu', np.linspace(0, 1, num_traces))
+
     fig = px.line(data_frame=df,
-                  x="Date", y="Ridership", color = "Service", template="plotly_dark")
+                  x="Date", y="Ridership", color = "Service", color_discrete_sequence=colors, template="plotly_dark")
     fig.add_vline(x=pd.Timestamp('2020-03-11'), line_width=2, line_dash="dash", line_color="yellow")
     fig.add_annotation(x=pd.Timestamp('2020-03-11'), y=3000000,
             text="WHO declares global pandemic",
@@ -60,16 +64,9 @@ def create_daily_timeseries(df):
                             ))
     return fig
 
-def create_treemap_chart(df):
-    fig = px.treemap(df, path=[px.Constant("MTA services"), 'Service'], values='Ridership',
-                  color='Ridership',
-                  color_continuous_scale='RdBu',
-                  color_continuous_midpoint=np.average(df['Ridership']))
-    fig.update_layout(margin = dict(t=0, l=0, r=0, b=0))
-    return fig
-
-def create_calendar_heatmap(df):
+def create_calendar_heatmap(df, year):
     data = df.reset_index()
+    data = data[data.Date.dt.year == int(year)]
     # Creating a pivot table for ridership data
     pivot_table = data.pivot_table(
         index=data['Date'].dt.month,  # Y-axis: months
@@ -102,9 +99,13 @@ def create_calendar_heatmap(df):
                     lenmode="fraction", len=1.1))
     return fig
 
-def create_bar_graph(df_precovid, df_postcovid):
+def create_bar_graph(df_precovid, df_postcovid, year):
+    df_postcovid = df_postcovid.reset_index()
+    df_postcovid = df_postcovid[df_postcovid.Date.dt.year == int(year)].set_index("Date")
+
     df_precovid = df_precovid.mean().sort_values(ascending=False)
     df_postcovid = df_postcovid.mean().sort_values(ascending=False)
+
     fig = go.Figure(data=[
     go.Bar(name='Pre-COVID', x=df_precovid.index, y=df_precovid, text=df_precovid, textposition="auto", marker=dict(color='#aee0b8')),
     go.Bar(name='Post-COVID', x=df_postcovid.index, y=df_postcovid, text=df_postcovid, textposition="auto", marker=dict(color='#096cae'))
@@ -193,10 +194,19 @@ def create_time_series_per_quarter(df_ridership, service_filter):
     fig.update_yaxes(title="", visible=False, range = (0, 350000000))
     return fig
 
-def create_donut_charts(df_ridership):
-    labels = df_ridership.sum().index
-    values = df_ridership.sum().values
-    colors = sample_colorscale("GnBu", [v / max(values) for v in values])
+def create_donut_charts(df_ridership, year):
+    df_ridership = df_ridership.reset_index()
+    df_ridership = df_ridership[df_ridership.Date.dt.year == int(year)]
+
+    df_ridership_weekdays = df_ridership[df_ridership.Date.dt.dayofweek < 5].set_index("Date")
+    df_ridership_weekends = df_ridership[df_ridership.Date.dt.dayofweek >= 5].set_index("Date")
+
+    labels_weekdays = df_ridership_weekdays.sum().index
+    values_weekdays = df_ridership_weekdays.sum().values
+    colors = sample_colorscale("GnBu", [v / max(values_weekdays) for v in values_weekdays])
+
+    labels_weekends = df_ridership_weekends.sum().index
+    values_weekends = df_ridership_weekends.sum().values
     
     fig = make_subplots(
     rows=1, cols=2,
@@ -206,8 +216,8 @@ def create_donut_charts(df_ridership):
     subplot_titles=["Service on weekdays", "Service on weekends"])
 
     fig.add_trace(go.Pie(
-        labels=labels, 
-        values=values,
+        labels=labels_weekdays, 
+        values=values_weekdays,
         marker=dict(colors=colors),
         hole = 0.6,
         legendgroup="group",
@@ -216,8 +226,8 @@ def create_donut_charts(df_ridership):
         row=1, col=1)
 
     fig.add_trace(go.Pie(
-        labels=labels,
-        values=values,
+        labels=labels_weekends,
+        values=values_weekends,
         marker=dict(colors=colors),
         hole = 0.6,
         legendgroup="group",

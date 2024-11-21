@@ -1,0 +1,24 @@
+# packaging
+pip>=9
+setuptools>=26
+twine
+wheel>=0.29
+
+# dash
+dash
+dash_bootstrap_components
+gunicorn
+uvicorn
+psycopg2
+plotly
+flask_caching
+
+# data
+pandas
+numpy
+
+# utils
+re
+os
+dotenv
+openai
