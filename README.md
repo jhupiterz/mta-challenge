@@ -1,9 +1,9 @@
 # Submission for Plotly Holiday Challenge, in colba with Maven Analytics
 
-This is my submission for the Holiday Dash App Challenge.\n
+This is my submission for the Holiday Dash App Challenge.
 The app can be accessed at [this link](https://mta-data-challenge-2328e0a413db.herokuapp.com/)
 
-It is a multi-page app:\n
+It is a multi-page app:
 
 1. Overview page featuring simple plots that can be filtered by year
 2. Animation page featuring an animated stacked line plot with a live net change tracker and a couple of filters
@@ -13,7 +13,7 @@ For performance, the app makes use of Flask Caching as the animation quickly con
 
 Below are some screencaptures:
 
-![overview](images/overview.png)\n
-![insights](images/insights.png)\n
+![overview](images/overview.png)
+![insights](images/insights.png)
 ![animation](images/animation.gif)
 
