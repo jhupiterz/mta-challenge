@@ -57,7 +57,7 @@ openai_input = html.Div([
     html.Div([
         html.H4("MTA Ridership Analysis Assistant", style = {"color": "black", "margin-bottom": "2vh"}),
         openai_switch
-    ], style = {"background-color": "#e9f7e3", "width": "35vw", "height": "12vh", "padding-left": "1.5vw"}),
+    ], style = {"background-color": "#e9f7e3", "width": "35vw", "height": "11vh", "padding-left": "1.5vw"}),
     html.Div([
         html.Pre(id='response_output', style = {"color": "white", 'whiteSpace': 'pre-wrap', 'wordWrap': 'break-word'})
     ], style = {"height": "70vh", "align-items": "center"})  
