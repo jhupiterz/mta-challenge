@@ -18,6 +18,4 @@ pandas
 numpy
 
 # utils
-os
-re
 openai
