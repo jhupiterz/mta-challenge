@@ -10,14 +10,14 @@ app = dash.Dash(
     meta_tags=[{"name": "viewport", "content": "width=device-width, initial-scale=1", 'charSet':'“UTF-8”'}])
 
 server = app.server
+
 app.title = "MTA Data App"
 
-app.layout = html.Div([
-        html.Header([
+app.layout = html.Div([html.Header([
         html.H1("MTA Pre- vs. Post-pandemic Data", style = {"color": "white", "text-align": "center"}),
         html.Div([
-            html.A("Overview", href = "/overview", style = {"color": "white", "margin-right": "2vw"}),
-            html.A("Animation", href = "/", style = {"color": "white", "margin-right": "2vw"}),
+            html.A("Overview", href = "/", style = {"color": "white", "margin-right": "2vw"}),
+            html.A("Animation", href = "/animation", style = {"color": "white", "margin-right": "2vw"}),
             html.A("ChatGPT Insights", href = "/insights", style = {"color": "white"})
         ], style = {"display": "flex", "flex-direction": "row", "align-items": "center", "justify-content": "flex-end"}),
     ], style = {"display": "flex", "flex-direction": "row", "align-items": "center", "justify-content": "space-between",

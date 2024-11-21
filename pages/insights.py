@@ -22,7 +22,9 @@ melted_data = df.reset_index().melt(
         'Buses: Total Estimated Ridership',
         'LIRR: Total Estimated Ridership',
         'Metro-North: Total Estimated Ridership',
-        'Access-A-Ride: Total Scheduled Trips'
+        'Access-A-Ride: Total Scheduled Trips',
+        'Bridges and Tunnels: Total Traffic',
+        'Staten Island Railway: Total Estimated Ridership'
     ],
     var_name='Service',
     value_name='Ridership'
@@ -98,7 +100,8 @@ layout = html.Div([
                 filter_switches,
                 dropdown_services,
             ], style = {"display": "flex", "flex-direction": "row", "margin-left": "5vw", "align-items": "center"}),
-            dcc.Graph(id = "time-series" ,responsive=True, style = {"height": "70vh", "width": "50vw",  "margin": "5vw", "margin-top": "2vh", "margin-right": "2vh"})
+            dcc.Loading(id = "loading-icon-insights",
+                        children = dcc.Graph(id = "time-series" ,responsive=True, style = {"height": "70vh", "width": "50vw",  "margin": "5vw", "margin-top": "2vh", "margin-right": "2vh"})),
         ], style = {"display": "flex", "flex-direction": "column"}),
 
         html.Div([
