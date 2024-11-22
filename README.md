@@ -1,4 +1,4 @@
-# Submission for Plotly Holiday Challenge, in colba with Maven Analytics
+# Submission for Plotly Holiday Challenge, in colab with Maven Analytics
 
 This is my submission for the Holiday Dash App Challenge.
 The app can be accessed at [this link](https://mta-data-challenge-2328e0a413db.herokuapp.com/)
