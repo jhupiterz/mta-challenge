@@ -5,9 +5,9 @@ The app can be accessed at [this link](https://mta-data-challenge-2328e0a413db.h
 
 It is a multi-page app:
 
-1. Overview page featuring simple plots that can be filtered by year
-2. Animation page featuring an animated stacked line plot with a live net change tracker and a couple of filters
-3. Insights page where the user can hover over a data point (i.e. date) to query ChatGPT for some insights regarding what might have disturbed the MTA ridership on that specific day
+1. **Overview page** featuring simple plots that can be filtered by year
+2. **Animation page** featuring an animated stacked line plot with a live net change tracker and a couple of filters
+3. **Insights page** where the user can hover over a data point (i.e. date) to query ChatGPT for some insights regarding what might have disturbed the MTA ridership on that specific day
 
 For performance, the app makes use of Flask Caching as the animation quickly consumes a lot of ressources.
 
